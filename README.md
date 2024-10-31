@@ -1,16 +1,24 @@
-# loan-decisions
+# README
 
-## Requirements
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-You need docker and docker-compose
+Things you may want to cover:
 
-## Run
+* Ruby version
 
-    docker-compose build
-    docker-compose up
-    # http://localhost:3000
+* System dependencies
 
-## Tests
+* Configuration
 
-    docker-compose run --rm app bash
-    ruby test/loan_service_test.rb
+* Database creation
+
+* Database initialization
+
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...
