@@ -1,9 +1,11 @@
 class EndpointsController < ApplicationController
+  include JSONAPI::Deserialization
+  include JSONAPI::Errors
   before_action :set_endpoint, only: %i[ show update destroy ]
 
   def index
-    @endpoints = Endpoint.all
-    render json: Endpoints::Serializer.new(@endpoints).serializable_hash
+    @endpoints = Endpoint.all.order(:id)
+    render jsonapi: @endpoints, each_serializer: Endpoints::Serializer
   end
 
   def show
@@ -37,11 +39,16 @@ class EndpointsController < ApplicationController
   end
 
   private
-    def set_endpoint
-      @endpoint = Endpoint.find(params[:id])
-    end
 
-    def endpoint_params
-      params.require(:endpoint).permit(:verb, :path, response: [:code, :headers, :body]).to_h
-    end
+  def set_endpoint
+    @endpoint = Endpoint.find(params[:id])
+  end
+
+  def endpoint_params
+    jsonapi_deserialize(params, only: [:verb, :path, :response])
+  end
+
+  def jsonapi_serializer_class(resource, is_collection)
+    Endpoints::Serializer
+  end
 end

@@ -1,15 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  verb: MyString
-  path: MyString
-  response_code: 1
-  response_headers: 
-  response_body: MyText
+  verb: GET
+  path: /test
+  response_code: 200
+  response_headers:  
+    "Content-Type": "application/json"
+  response_body: '{ "message": "test" }'
 
 two:
-  verb: MyString
-  path: MyString
-  response_code: 1
+  verb: POST
+  path: /test2
+  response_code: 200
   response_headers: 
-  response_body: MyText
+    "Content-Type": "text/plain"
+  response_body: test2

@@ -6,39 +6,100 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
+    endpoint2 = endpoints(:two)
+
     get endpoints_url, as: :json
+
     assert_response :success
+    assert_equal(
+      {
+        data: [ 
+          {
+            id: endpoint2.id.to_s,  
+            type: "endpoints",
+            attributes: {
+              verb: "POST",
+              path: "/test2",
+              response: { 
+                code: 200, 
+                headers: { "Content-Type": "text/plain" }, 
+                body: "test2" 
+              }
+            }
+          },
+          {
+            id: @endpoint.id.to_s,
+            type: "endpoints",
+            attributes: {
+              verb: "GET",
+              path: "/test",
+              response: { 
+                code: 200, 
+                headers: { "Content-Type": "application/json" }, 
+                body: '{ "message": "test" }' 
+              }
+            }
+          }
+        ]
+      },
+      json_response
+    )
   end
 
   test "should create endpoint" do
     params = {
-      path: "/test",
-      verb: "get",
-      response: {
-        body: "test",
-        code: 200,
-        headers: {
-          "Content-Type" => "application/json"
+      data: { 
+        type: "endpoints",
+        attributes: {
+          path: "/test",
+          verb: "GET",
+          response: {
+            body: '{ message: "test" }',
+            code: 200,
+            headers: {
+              "Content-Type" => "application/json"
+            }
+          }
         }
-      },
+      }
     }
 
     assert_difference("Endpoint.count") do
-      post endpoints_url, params: { endpoint: params }, as: :json
+      post endpoints_url, params: params, as: :json
 
       assert_response :created
       assert_equal(
         {
           data: {
             id: "980190963",
-            type: "",
+            type: "endpoints",
             attributes: {
-              verb: "get",
+              verb: "GET",
               path: "/test",
-              response: { code: 200, headers: nil, body: "test" }
+              response: { 
+                code: 200, 
+                headers: { "Content-Type": "application/json" }, 
+                body: '{ message: "test" }' 
+              }
             }
           }
         },
+        json_response
+      )
+    end
+  end
+
+  test "should not create endpoint with invalid verb" do
+    params = {
+      data: { type: "endpoints", attributes: { path: "/test", verb: "unknown", response: { body: "test", code: 200 } } }
+    }
+
+    assert_no_difference("Endpoint.count") do
+      post endpoints_url, params: params, as: :json
+
+      assert_response :unprocessable_entity
+      assert_equal(
+        { errors: [{ code: "invalid_verb", detail: "Verb must be one of: GET, HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH" }] },
         json_response
       )
     end

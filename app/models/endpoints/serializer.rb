@@ -1,8 +1,8 @@
 class Endpoints::Serializer
   include JSONAPI::Serializer
   
+  set_type :endpoints
   attributes :verb, :path
-  
   attribute :response do |object|
     {
       code: object.response_code,

@@ -35,5 +35,4 @@ group :development, :test do
 end
 
 gem 'jsonapi-serializer'
-
-
+gem 'jsonapi.rb'
