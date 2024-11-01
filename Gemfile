@@ -18,6 +18,8 @@ gem "bootsnap", require: false
 
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 
+gem "dry-validation"
+
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 # gem "rack-cors"
 
@@ -31,5 +33,7 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 end
+
+gem 'jsonapi-serializer'
 
 
