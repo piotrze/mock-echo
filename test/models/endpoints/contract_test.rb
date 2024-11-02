@@ -89,4 +89,15 @@ class Endpoints::ContractTest < ActiveSupport::TestCase
     result = @contract.call(params)
     assert result.success?
   end
+
+  def test_duplicated_path_and_verb
+    result = @contract.call(
+      path: '/test',
+      verb: 'GET',
+      response: { code: 200 }
+    )
+
+    assert_not result.success?
+    assert_includes result.errors[:path], 'must be unique'
+  end
 end 

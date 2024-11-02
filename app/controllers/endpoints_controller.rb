@@ -1,8 +1,12 @@
 class EndpointsController < ApplicationController
   include JSONAPI::Deserialization
   
+  before_action :check_content_type, only: %i[ create update ]
+  before_action :check_accept_header
+  before_action :set_endpoint, only: %i[ show update destroy ]
+
   rescue_from ActiveRecord::RecordNotFound do |e|
-    render json: ErrorSerializer.serialize_errors('not_found' => 'Record not found'), 
+    render json: ErrorSerializer.serialize_errors('not_found' => "Requested Endpoint with ID #{params[:id]} does not exist"), 
            status: :not_found
   end
   
@@ -10,8 +14,6 @@ class EndpointsController < ApplicationController
     render json: ErrorSerializer.serialize_errors('invalid_request' => e.message), 
            status: :bad_request
   end
-
-  before_action :set_endpoint, only: %i[ show update destroy ]
 
   def index
     endpoints = repository.all
@@ -36,7 +38,7 @@ class EndpointsController < ApplicationController
   end
 
   def update
-    contract = Endpoints::Contract.new.call(endpoint_params)
+    contract = Endpoints::Contract.new(record: @endpoint).call(endpoint_params)
     if contract.success?
       @endpoint = repository.update(@endpoint, **contract.to_h)
 
@@ -67,5 +69,21 @@ class EndpointsController < ApplicationController
 
   def jsonapi_serializer_class(resource, is_collection)
     Endpoints::Serializer
+  end
+
+  def check_content_type
+    unless request.content_type == 'application/vnd.api+json'
+      render json: ErrorSerializer.serialize_errors('invalid_request' => 'Content-Type must be application/vnd.api+json'),
+             status: :unsupported_media_type,
+             content_type: 'application/vnd.api+json'
+    end
+  end
+
+  def check_accept_header
+    unless request.accept == 'application/vnd.api+json'
+      render json: ErrorSerializer.serialize_errors('invalid_request' => 'Accept header must be application/vnd.api+json'),
+             status: :unsupported_media_type,
+             content_type: 'application/vnd.api+json'
+    end
   end
 end

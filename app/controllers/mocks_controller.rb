@@ -1,7 +1,11 @@
 class MocksController < ApplicationController
-  def show
-    clear_default_charset
+  rescue_from ActiveRecord::RecordNotFound do |e|
+    render json: ErrorSerializer.serialize_errors({
+      not_found: "Requested resource does not exist"
+    }), status: :not_found
+  end
 
+  def show
     if endpoint
       render plain: endpoint.response_body, 
              status: endpoint.response_code, 

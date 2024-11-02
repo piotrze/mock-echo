@@ -8,9 +8,13 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     endpoint2 = endpoints(:two)
 
-    get endpoints_url, as: :json
+    get endpoints_url, as: :json, headers: { "Accept": "application/vnd.api+json" }
 
     assert_response :success
+    assert_equal(
+      "application/vnd.api+json",
+      response.headers['Content-Type']
+    )
     assert_equal(
       {
         data: [ 
@@ -51,7 +55,7 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
       data: { 
         type: "endpoints",
         attributes: {
-          path: "/test",
+          path: "/test3",
           verb: "GET",
           response: {
             body: '{ message: "test" }',
@@ -65,7 +69,7 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
     }
 
     assert_difference("Endpoint.count") do
-      post endpoints_url, params: params, as: :json
+      post endpoints_url, params: params, as: :json, headers: { "Accept": "application/vnd.api+json", "Content-Type": "application/vnd.api+json" }
 
       assert_response :created
       assert_equal(
@@ -75,7 +79,7 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
             type: "endpoints",
             attributes: {
               verb: "GET",
-              path: "/test",
+              path: "/test3",
               response: { 
                 code: 200, 
                 headers: { "Content-Type": "application/json" }, 
@@ -95,7 +99,7 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
     }
 
     assert_no_difference("Endpoint.count") do
-      post endpoints_url, params: params, as: :json
+      post endpoints_url, params: params, as: :json, headers: { "Accept": "application/vnd.api+json", "Content-Type": "application/vnd.api+json" }
 
       assert_response :unprocessable_entity
       assert_equal(
@@ -108,7 +112,7 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
   test "should not create endpoint when wrong request format" do
     params = { path: "/test" }
 
-    post endpoints_url, params: params, as: :json
+    post endpoints_url, params: params, as: :json, headers: { "Accept": "application/vnd.api+json", "Content-Type": "application/vnd.api+json" }
 
     assert_response :bad_request
     assert_equal(
@@ -120,7 +124,7 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
   test "should not create endpoint when wrong attributes" do
     params = { data: { attributes: {} } }
 
-    post endpoints_url, params: params, as: :json
+    post endpoints_url, params: params, as: :json, headers: { "Accept": "application/vnd.api+json", "Content-Type": "application/vnd.api+json" }
 
     assert_response :unprocessable_entity
     assert_equal(
@@ -137,7 +141,7 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should show endpoint" do
-    get endpoint_url(@endpoint), as: :json
+    get endpoint_url(@endpoint), as: :json, headers: { "Accept": "application/vnd.api+json" }
     assert_response :success
   end
 
@@ -153,7 +157,7 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
       }
     }
 
-    patch endpoint_url(@endpoint), params: params, as: :json
+    patch endpoint_url(@endpoint), params: params, as: :json, headers: { "Accept": "application/vnd.api+json", "Content-Type": "application/vnd.api+json" }
     assert_response :success
     assert_equal(
       {
@@ -173,7 +177,7 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
 
   test "should destroy endpoint" do
     assert_difference("Endpoint.count", -1) do
-      delete endpoint_url(@endpoint), as: :json
+      delete endpoint_url(@endpoint), as: :json, headers: { "Accept": "application/vnd.api+json" }
     end
 
     assert_response :no_content
