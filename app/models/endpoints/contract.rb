@@ -9,7 +9,7 @@ class Endpoints::Contract < Dry::Validation::Contract
     required(:verb).filled(:string, included_in?: VERBS)
     required(:response).hash do
       required(:code).filled(:integer)
-      optional(:headers).filled(:hash)
+      optional(:headers).maybe(:hash)
       optional(:body).filled(:string)
     end
   end
