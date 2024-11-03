@@ -7,10 +7,7 @@ class MocksController < ApplicationController
 
   def show
     if endpoint
-      render plain: endpoint.response_body, 
-             status: endpoint.response_code, 
-             content_type: content_type,
-             headers: endpoint.response_headers
+      render_endpoint_response
     else
       render json: not_found_response, status: :not_found
     end
@@ -36,5 +33,27 @@ class MocksController < ApplicationController
 
   def clear_default_charset
     ActionDispatch::Response::default_charset = nil
+  end
+
+  def render_endpoint_response
+    delay
+    override_response_code
+
+    render plain: endpoint.response_body, 
+           status: endpoint.response_code, 
+           content_type: content_type,
+           headers: endpoint.response_headers
+  end
+
+  def delay
+    if ENV.fetch('MOCK_DELAY', nil).present?
+      sleep(ENV.fetch('MOCK_DELAY').to_f)
+    end
+  end
+
+  def override_response_code
+    if ENV.fetch('MOCK_OVERRIDE_RESPONSE_CODE', nil).present?
+      endpoint.response_code = ENV.fetch('MOCK_OVERRIDE_RESPONSE_CODE').to_i
+    end
   end
 end

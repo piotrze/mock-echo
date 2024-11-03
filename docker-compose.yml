@@ -8,5 +8,8 @@ services:
       - "3000:3000"
     tty: true
     stdin_open: true
+    environment:
+      - MOCK_DELAY=1
+      - MOCK_OVERRIDE_RESPONSE_CODE=200
     # command:
     #   - /rails/bin/rails server

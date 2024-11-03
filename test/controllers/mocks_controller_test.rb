@@ -53,4 +53,20 @@ class MocksControllerTest < ActionDispatch::IntegrationTest
     post '/foo/bar'
     assert_response :not_found
   end
+
+  test 'should respond with delay' do
+    ENV['MOCK_DELAY'] = '0.1'
+
+    get '/test'
+
+    assert_response :success
+  end
+
+  test 'should respond with overridden response code' do
+    ENV['MOCK_OVERRIDE_RESPONSE_CODE'] = '400'
+
+    get '/test'
+
+    assert_response :bad_request
+  end
 end

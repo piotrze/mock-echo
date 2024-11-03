@@ -10,6 +10,7 @@ Mock Echo is a simple API mocking service that allows you to create and manage m
 - JSON:API compliant interface
 - Repository pattern for flexible storage options
 - Robust validation using Dry::Validation
+- Delay and override response code
 
 ## Installation
 
@@ -53,44 +54,6 @@ Once created, you can make requests to your mock endpoints:
 curl http://localhost:3000/greeting
 ```
 
-## Architecture
-
-```mermaid
-classDiagram
-    class EndpointsController {
-        +index()
-        +show()
-        +create()
-        +update()
-        +destroy()
-    }
-
-    class MocksController {
-        +show()
-    }
-
-    class Endpoints::Repository {
-        +create()
-        +update()
-        +destroy()
-        +find()
-        +find_by_path_and_verb()
-        +all()
-    }
-
-    class Endpoint {
-        +verb
-        +path
-        +response_code
-        +response_headers
-        +response_body
-    }
-
-    EndpointsController --> Endpoints::Repository : uses
-    MocksController --> Endpoints::Repository : uses
-    Endpoints::Repository --> Endpoint : manages
-```
-
 ## Development
 
 The project follows clean architecture principles:
@@ -119,6 +82,30 @@ Available operations:
 - `POST /endpoints` - Create new endpoint
 - `PATCH /endpoints/:id` - Update endpoint
 - `DELETE /endpoints/:id` - Delete endpoint
+
+## Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    Client->>+EndpointsController: POST /endpoints
+    EndpointsController->>+Contract: validate(params)
+    Contract-->>-EndpointsController: validation result
+    EndpointsController->>+Repository: create(params)
+    Repository->>+Endpoint: new record
+    Endpoint-->>-Repository: endpoint
+    Repository-->>-EndpointsController: endpoint
+    EndpointsController->>+Serializer: serialize(endpoint)
+    Serializer-->>-EndpointsController: JSON response
+    EndpointsController-->>-Client: 201 Created
+```
+
+## TODO
+
+- Add authentication
+- Allow to create endpoints per user
+- Add support for subdomain routing
+- Move `/endpoints` to separate subdomain so you can define mocked request to `/endpoints` path
+- Add endpoint to define delay and override response code per endpoint
 
 ## License
 
