@@ -175,11 +175,23 @@ class EndpointsControllerTest < ActionDispatch::IntegrationTest
     ) 
   end
 
+  test "should not update not existing endpoint" do
+    params = { data: { type: "endpoints", attributes: { path: "/test", verb: "GET", response: { body: "test", code: 200 } } } }
+
+    patch endpoint_url(0), params: params, as: :json, headers: { "Accept": "application/vnd.api+json", "Content-Type": "application/vnd.api+json" }
+    assert_response :not_found
+  end
+
   test "should destroy endpoint" do
     assert_difference("Endpoint.count", -1) do
       delete endpoint_url(@endpoint), as: :json, headers: { "Accept": "application/vnd.api+json" }
     end
 
     assert_response :no_content
+  end
+
+  test "should not destroy not existing endpoint" do
+    delete endpoint_url(0), as: :json, headers: { "Accept": "application/vnd.api+json" }
+    assert_response :not_found
   end
 end

@@ -14,6 +14,14 @@ class Endpoints::Contract < Dry::Validation::Contract
     end
   end
 
+  rule(:path) do
+    # Validate path format: must start with / and contain valid URL characters
+    # Ensure path starts with / and doesn't allow paths without leading /
+    unless values[:path].match?(%r{\A/[a-zA-Z0-9\-._~!$&'()*+,;=:@%/]+\z})
+      key.failure('must be a valid HTTP path starting with /')
+    end
+  end
+
   rule(:path, :verb) do
     scope = Endpoint.where(path: values[:path], verb: values[:verb])
     scope = scope.where.not(id: record&.id) if record

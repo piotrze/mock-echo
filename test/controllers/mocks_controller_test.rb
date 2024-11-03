@@ -40,4 +40,17 @@ class MocksControllerTest < ActionDispatch::IntegrationTest
       json_response
     )
   end
+
+  test 'should not respond to shorter path' do
+    Endpoint.create!(path: '/foo/bar/baz', verb: 'POST', response_body: 'test', response_code: 200)
+
+    get '/foo/bar/baz'
+    assert_response :not_found
+
+    get '/foo/bar'
+    assert_response :not_found
+
+    post '/foo/bar'
+    assert_response :not_found
+  end
 end

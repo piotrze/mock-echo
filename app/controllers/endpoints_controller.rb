@@ -50,7 +50,9 @@ class EndpointsController < ApplicationController
   end
 
   def destroy
-    @endpoint.destroy!
+    repository.destroy(@endpoint)
+
+    head :no_content
   end
 
   private

@@ -100,4 +100,25 @@ class Endpoints::ContractTest < ActiveSupport::TestCase
     assert_not result.success?
     assert_includes result.errors[:path], 'must be unique'
   end
+
+  def test_invalid_path_format
+    result = @contract.call(
+      path: 'api/users',  # path doesn't start with '/'
+      verb: 'GET',
+      response: { code: 200 }
+    )
+    
+    assert_not result.success?
+    assert_includes result.errors[:path], 'must be a valid HTTP path starting with /'
+  end
+
+  def test_valid_path_format
+    result = @contract.call(
+      path: '/api/users/123',
+      verb: 'GET',
+      response: { code: 200 }
+    )
+    
+    assert result.success?
+  end
 end 

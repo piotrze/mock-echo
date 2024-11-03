@@ -1,5 +1,5 @@
-class Endpoints::Repository
-  class << self
+module Endpoints
+  module Commands
     def create(verb:, path:, response:)
       Endpoint.create(
         verb: verb,
@@ -20,6 +20,12 @@ class Endpoints::Repository
       ) && endpoint
     end
 
+    def destroy(endpoint)
+      endpoint.destroy
+    end
+  end
+
+  module Queries
     def find(id)
       Endpoint.find(id)
     end
@@ -31,5 +37,10 @@ class Endpoints::Repository
     def all
       Endpoint.all.order(:id)
     end
+  end
+
+  class Repository
+    extend Commands
+    extend Queries
   end
 end
